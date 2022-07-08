@@ -17,6 +17,7 @@ npx cap sync
 * [`setPlaybackState(...)`](#setplaybackstate)
 * [`setActionHandler(...)`](#setactionhandler)
 * [`setPositionState(...)`](#setpositionstate)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -26,12 +27,14 @@ npx cap sync
 ### setMetadata(...)
 
 ```typescript
-setMetadata(metadata: any) => Promise<void>
+setMetadata(options: any) => Promise<void>
 ```
 
-| Param          | Type             |
-| -------------- | ---------------- |
-| **`metadata`** | <code>any</code> |
+Sets metadata of the currently playing media. Analogue to setting the [metadata property of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/metadata) when using the Media Session API directly.
+
+| Param         | Type             |
+| ------------- | ---------------- |
+| **`options`** | <code>any</code> |
 
 --------------------
 
@@ -39,12 +42,14 @@ setMetadata(metadata: any) => Promise<void>
 ### setPlaybackState(...)
 
 ```typescript
-setPlaybackState(state: any) => Promise<void>
+setPlaybackState(options: PlaybackStateOptions) => Promise<void>
 ```
 
-| Param       | Type             |
-| ----------- | ---------------- |
-| **`state`** | <code>any</code> |
+Indicates whether media is playing or not. Analogue to setting the [playbackState property of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/playbackState) when using the Media Session API directly.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#playbackstateoptions">PlaybackStateOptions</a></code> |
 
 --------------------
 
@@ -52,13 +57,15 @@ setPlaybackState(state: any) => Promise<void>
 ### setActionHandler(...)
 
 ```typescript
-setActionHandler(action: any, handler: MediaSessionActionHandler | null) => Promise<void>
+setActionHandler(options: ActionHandlerOptions, handler: MediaSessionActionHandler | null) => Promise<void>
 ```
 
-| Param         | Type             |
-| ------------- | ---------------- |
-| **`action`**  | <code>any</code> |
-| **`handler`** | <code>any</code> |
+Sets handler for media session actions (e.g. initiated via onscreen media controls or physical buttons). Analogue to calling [setActionHandler() of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler) when using the Media Session API directly.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#actionhandleroptions">ActionHandlerOptions</a></code> |
+| **`handler`** | <code>any</code>                                                      |
 
 --------------------
 
@@ -66,13 +73,32 @@ setActionHandler(action: any, handler: MediaSessionActionHandler | null) => Prom
 ### setPositionState(...)
 
 ```typescript
-setPositionState(state?: any) => Promise<void>
+setPositionState(options: any) => Promise<void>
 ```
 
-| Param       | Type             |
-| ----------- | ---------------- |
-| **`state`** | <code>any</code> |
+Update current media playback position, duration and speed. Analogue to calling [setPositionState() of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setPositionState) when using the Media Session API directly.
+
+| Param         | Type             |
+| ------------- | ---------------- |
+| **`options`** | <code>any</code> |
 
 --------------------
+
+
+### Interfaces
+
+
+#### PlaybackStateOptions
+
+| Prop                | Type                                   |
+| ------------------- | -------------------------------------- |
+| **`playbackState`** | <code>MediaSessionPlaybackState</code> |
+
+
+#### ActionHandlerOptions
+
+| Prop         | Type                            |
+| ------------ | ------------------------------- |
+| **`action`** | <code>MediaSessionAction</code> |
 
 </docgen-api>
