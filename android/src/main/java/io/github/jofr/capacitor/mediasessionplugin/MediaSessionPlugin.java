@@ -8,8 +8,10 @@ import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -108,7 +110,21 @@ public class MediaSessionPlugin extends Plugin {
 
         PluginCall call = actionHandlers.get(action);
         if (call != null) {
-            call.resolve();
+            JSObject data = new JSObject();
+            data.put("action", action);
+            call.resolve(data);
+        } else {
+            Log.i(TAG, "No callback for action " + action);
+        }
+    }
+
+    public void actionCallback(String action, JSObject data) {
+        Log.d(TAG, "actionCallback (for action " + action + ")");
+
+        PluginCall call = actionHandlers.get(action);
+        if (call != null) {
+            data.put("action", action);
+            call.resolve(data);
         } else {
             Log.i(TAG, "No callback for action " + action);
         }
