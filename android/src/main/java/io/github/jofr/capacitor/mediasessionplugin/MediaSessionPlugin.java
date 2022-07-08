@@ -103,6 +103,7 @@ public class MediaSessionPlugin extends Plugin {
         service.setDuration(duration);
         service.setPosition(position);
         service.setPlaybackSpeed(playbackSpeed);
+        service.update();
     }
 
     public void actionCallback(String action) {
