@@ -13,24 +13,65 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`setMetadata(...)`](#setmetadata)
+* [`setPlaybackState(...)`](#setplaybackstate)
+* [`setActionHandler(...)`](#setactionhandler)
+* [`setPositionState(...)`](#setpositionstate)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### setMetadata(...)
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+setMetadata(metadata: any) => Promise<void>
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
+| Param          | Type             |
+| -------------- | ---------------- |
+| **`metadata`** | <code>any</code> |
 
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+--------------------
+
+
+### setPlaybackState(...)
+
+```typescript
+setPlaybackState(state: any) => Promise<void>
+```
+
+| Param       | Type             |
+| ----------- | ---------------- |
+| **`state`** | <code>any</code> |
+
+--------------------
+
+
+### setActionHandler(...)
+
+```typescript
+setActionHandler(action: any, handler: MediaSessionActionHandler | null) => Promise<void>
+```
+
+| Param         | Type             |
+| ------------- | ---------------- |
+| **`action`**  | <code>any</code> |
+| **`handler`** | <code>any</code> |
+
+--------------------
+
+
+### setPositionState(...)
+
+```typescript
+setPositionState(state?: any) => Promise<void>
+```
+
+| Param       | Type             |
+| ----------- | ---------------- |
+| **`state`** | <code>any</code> |
 
 --------------------
 
