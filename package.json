@@ -13,7 +13,7 @@
     "ios/Plugin/",
     "CapacitorMediaSession.podspec"
   ],
-  "author": "Jonas",
+  "author": "Jonas <jofr@vivaldi.net>",
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",

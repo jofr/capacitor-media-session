@@ -1,9 +1,9 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { ActionHandlerOptions, MediaSessionPlugin, PlaybackStateOptions } from './definitions';
+import type { MetadataOptions, PlaybackStateOptions, ActionHandlerOptions, PositionStateOptions, MediaSessionPlugin } from './definitions';
 
 export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
-    async setMetadata(options: MediaMetadataInit): Promise<void> {
+    async setMetadata(options: MetadataOptions): Promise<void> {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata(options);
         } else {
@@ -27,7 +27,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         }
     };
 
-    async setPositionState(options: MediaPositionState): Promise<void> {
+    async setPositionState(options: PositionStateOptions): Promise<void> {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setPositionState(options);
         } else {
