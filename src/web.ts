@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { MetadataOptions, PlaybackStateOptions, ActionHandlerOptions, PositionStateOptions, MediaSessionPlugin } from './definitions';
+import type { MetadataOptions, PlaybackStateOptions, ActionHandlerOptions, ActionHandler, PositionStateOptions, MediaSessionPlugin } from './definitions';
 
 export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
     async setMetadata(options: MetadataOptions): Promise<void> {
@@ -19,7 +19,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         }
     };
 
-    async setActionHandler(options: ActionHandlerOptions, handler: MediaSessionActionHandler | null): Promise<void> {
+    async setActionHandler(options: ActionHandlerOptions, handler: ActionHandler | null): Promise<void> {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler(options.action, handler);
         } else {

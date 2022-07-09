@@ -11,7 +11,7 @@ An additional disadvantage of this behaviour an Android is that audio playback i
 Android might and will force your app to go to sleep even if audio is currently playing in your WebView.
 This plugin also tries to solve this problem by starting a [foreground service](https://developer.android.com/guide/components/foreground-services) for active Media Sessions enabling background playback.
 
-The API of this plugin tries to stay as close as possible to the already widely supported [Media Session Web API](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility).
+The API of this plugin tries to stay as close as possible to the [already widely supported](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility) Media Session Web API.
 So most available documentation for this web standard should be easily adaptable to this Capacitor plugin.
 
 ## Install
@@ -30,6 +30,7 @@ npx cap sync
 * [`setActionHandler(...)`](#setactionhandler)
 * [`setPositionState(...)`](#setpositionstate)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -39,14 +40,17 @@ npx cap sync
 ### setMetadata(...)
 
 ```typescript
-setMetadata(options: any) => Promise<void>
+setMetadata(options: MetadataOptions) => Promise<void>
 ```
 
-Sets metadata of the currently playing media. Analogue to setting the [metadata property of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/metadata) when using the Media Session API directly.
+Sets metadata of the currently playing media. Analogue to setting the
+[metadata property of the MediaSession
+interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/metadata)
+when using the Media Session API directly.
 
-| Param         | Type             |
-| ------------- | ---------------- |
-| **`options`** | <code>any</code> |
+| Param         | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`options`** | <code><a href="#metadataoptions">MetadataOptions</a></code> |
 
 --------------------
 
@@ -57,7 +61,10 @@ Sets metadata of the currently playing media. Analogue to setting the [metadata 
 setPlaybackState(options: PlaybackStateOptions) => Promise<void>
 ```
 
-Indicate whether media is playing or not. Analogue to setting the [playbackState property of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/playbackState) when using the Media Session API directly.
+Indicate whether media is playing or not. Analogue to setting the
+[playbackState property of the MediaSession
+interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/playbackState)
+when using the Media Session API directly.
 
 | Param         | Type                                                                  |
 | ------------- | --------------------------------------------------------------------- |
@@ -69,15 +76,19 @@ Indicate whether media is playing or not. Analogue to setting the [playbackState
 ### setActionHandler(...)
 
 ```typescript
-setActionHandler(options: ActionHandlerOptions, handler: MediaSessionActionHandler | null) => Promise<void>
+setActionHandler(options: ActionHandlerOptions, handler: ActionHandler | null) => Promise<void>
 ```
 
-Sets handler for media session actions (e.g. initiated via onscreen media controls or physical buttons). Analogue to calling [setActionHandler() of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler) when using the Media Session API directly.
+Sets handler for media session actions (e.g. initiated via onscreen media
+controls or physical buttons). Analogue to calling [setActionHandler() of
+the MediaSession
+interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler)
+when using the Media Session API directly.
 
 | Param         | Type                                                                  |
 | ------------- | --------------------------------------------------------------------- |
 | **`options`** | <code><a href="#actionhandleroptions">ActionHandlerOptions</a></code> |
-| **`handler`** | <code>any</code>                                                      |
+| **`handler`** | <code><a href="#actionhandler">ActionHandler</a> \| null</code>       |
 
 --------------------
 
@@ -85,19 +96,32 @@ Sets handler for media session actions (e.g. initiated via onscreen media contro
 ### setPositionState(...)
 
 ```typescript
-setPositionState(options: any) => Promise<void>
+setPositionState(options: PositionStateOptions) => Promise<void>
 ```
 
-Update current media playback position, duration and speed. Analogue to calling [setPositionState() of the MediaSession interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setPositionState) when using the Media Session API directly.
+Update current media playback position, duration and speed. Analogue to
+calling [setPositionState() of the MediaSession
+interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setPositionState)
+when using the Media Session API directly.
 
-| Param         | Type             |
-| ------------- | ---------------- |
-| **`options`** | <code>any</code> |
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#positionstateoptions">PositionStateOptions</a></code> |
 
 --------------------
 
 
 ### Interfaces
+
+
+#### MetadataOptions
+
+| Prop          | Type                |
+| ------------- | ------------------- |
+| **`album`**   | <code>string</code> |
+| **`artist`**  | <code>string</code> |
+| **`artwork`** | <code>any[]</code>  |
+| **`title`**   | <code>string</code> |
 
 
 #### PlaybackStateOptions
@@ -112,5 +136,30 @@ Update current media playback position, duration and speed. Analogue to calling 
 | Prop         | Type                            |
 | ------------ | ------------------------------- |
 | **`action`** | <code>MediaSessionAction</code> |
+
+
+#### ActionDetails
+
+| Prop           | Type                            |
+| -------------- | ------------------------------- |
+| **`action`**   | <code>MediaSessionAction</code> |
+| **`seekTime`** | <code>number \| null</code>     |
+
+
+#### PositionStateOptions
+
+| Prop               | Type                |
+| ------------------ | ------------------- |
+| **`duration`**     | <code>number</code> |
+| **`playbackRate`** | <code>number</code> |
+| **`position`**     | <code>number</code> |
+
+
+### Type Aliases
+
+
+#### ActionHandler
+
+<code>(details: <a href="#actiondetails">ActionDetails</a>): void</code>
 
 </docgen-api>

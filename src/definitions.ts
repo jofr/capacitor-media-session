@@ -13,6 +13,13 @@ export interface ActionHandlerOptions {
     action: MediaSessionAction
 }
 
+export type ActionHandler = (details: ActionDetails) => void;
+
+interface ActionDetails {
+    action: MediaSessionAction;
+    seekTime?: number | null;
+}
+
 export interface PositionStateOptions {
     duration?: number;
     playbackRate?: number;
@@ -41,7 +48,7 @@ export interface MediaSessionPlugin {
      * interface](https://developer.mozilla.org/en-US/docs/Web/API/MediaSession/setActionHandler)
      * when using the Media Session API directly.
      */
-    setActionHandler(options: ActionHandlerOptions, handler: MediaSessionActionHandler | null): Promise<void>;
+    setActionHandler(options: ActionHandlerOptions, handler: ActionHandler | null): Promise<void>;
     /**
      * Update current media playback position, duration and speed. Analogue to
      * calling [setPositionState() of the MediaSession
