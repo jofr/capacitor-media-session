@@ -28,9 +28,6 @@ import java.util.Set;
 public class MediaSessionService extends Service {
     private static final String TAG = "MediaSessionService";
 
-    private MediaSessionPlugin plugin;
-    private MediaSessionCallback callback;
-
     private MediaSessionCompat mediaSession;
     private PlaybackStateCompat.Builder playbackStateBuilder;
     private MediaMetadataCompat.Builder mediaMetadataBuilder;
@@ -52,6 +49,9 @@ public class MediaSessionService extends Service {
     private boolean playbackStateUpdate = false;
     private boolean mediaMetadataUpdate = false;
     private boolean notificationUpdate = false;
+
+    private MediaSessionPlugin plugin;
+    private MediaSessionCallback callback;
 
     private final IBinder binder = new LocalBinder();
 
@@ -121,6 +121,11 @@ public class MediaSessionService extends Service {
         ));
     }
 
+    public void destroy() {
+        stopForeground(true);
+        stopSelf();
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         MediaButtonReceiver.handleIntent(mediaSession, intent);
@@ -128,6 +133,7 @@ public class MediaSessionService extends Service {
     }
 
     public void setPlaybackState(int playbackState) {
+        Log.d(TAG, "setPlaybackState " + playbackState);
         if (this.playbackState != playbackState) {
             this.playbackState = playbackState;
             playbackStateUpdate = true;
@@ -203,6 +209,7 @@ public class MediaSessionService extends Service {
             int actionIndex = 0;
             for (String actionName : possibleActions) {
                 if (plugin.hasActionHandler(actionName)) {
+                    Log.d(TAG, "hasActionHandler " + actionName);
                     if (actionName.equals("play") && playbackState != PlaybackStateCompat.STATE_PAUSED) {
                         continue;
                     }

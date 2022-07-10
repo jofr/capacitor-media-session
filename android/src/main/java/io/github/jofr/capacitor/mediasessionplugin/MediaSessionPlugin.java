@@ -23,6 +23,15 @@ import java.util.Map;
 public class MediaSessionPlugin extends Plugin {
     private static final String TAG = "MediaSessionPlugin";
 
+    private boolean startServiceOnlyDuringPlayback = false;
+
+    private String title = "";
+    private String artist = "";
+    private String album = "";
+    private String playbackState = "none";
+    private double duration = 0.0;
+    private double position = 0.0;
+    private double playbackRate = 1.0;
     private final Map<String, PluginCall> actionHandlers = new HashMap<>();
 
     private MediaSessionService service = null;
@@ -35,6 +44,9 @@ public class MediaSessionPlugin extends Plugin {
             MediaSessionService.LocalBinder binder = (MediaSessionService.LocalBinder) iBinder;
             service = binder.getService();
             service.connectAndInitialize(MediaSessionPlugin.this);
+            updateServiceMetadata();
+            updateServicePlaybackState();
+            updateServicePositionState();
         }
 
         @Override
@@ -47,7 +59,14 @@ public class MediaSessionPlugin extends Plugin {
     public void load() {
         super.load();
 
-        startMediaService();
+        final String foregroundServiceConfig = getConfig().getString("foregroundService", "");
+        if (foregroundServiceConfig.equals("duringPlayback")) {
+            startServiceOnlyDuringPlayback = true;
+        }
+
+        if (!startServiceOnlyDuringPlayback) {
+            startMediaService();
+        }
     }
 
     public void startMediaService() {
@@ -56,64 +75,71 @@ public class MediaSessionPlugin extends Plugin {
         getContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
+    private void updateServiceMetadata() {
+        service.setTitle(title);
+        service.setArtist(artist);
+        service.setAlbum(album);
+        service.update();
+    }
+
     @PluginMethod
     public void setMetadata(PluginCall call) {
-        if (service == null) {
-            Log.w(TAG, "Trying to set metadata but not connected to a MediaSessionService");
-            return;
-        }
+        title = call.getString("title", title);
+        artist = call.getString("artist", artist);
+        album = call.getString("album", album);
 
-        service.setTitle(call.getString("title", ""));
-        service.setArtist(call.getString("artist", ""));
-        service.setAlbum(call.getString("album", ""));
-        service.update();
+        if (service != null) { updateServiceMetadata(); };
+    }
+
+    private void updateServicePlaybackState() {
+        if (playbackState.equals("playing")) {
+            service.setPlaybackState(PlaybackStateCompat.STATE_PLAYING);
+            service.update();
+        } else if (playbackState.equals("paused")) {
+            service.setPlaybackState(PlaybackStateCompat.STATE_PAUSED);
+            service.update();
+        } else {
+            service.setPlaybackState(PlaybackStateCompat.STATE_NONE);
+            service.update();
+        }
     }
 
     @PluginMethod
     public void setPlaybackState(PluginCall call) {
-        if (service == null) {
-            Log.w(TAG, "Trying to set playback state but not connected to a MediaSessionService");
-            return;
-        }
+        playbackState = call.getString("playbackState", playbackState);
 
-        String state = call.getString("playbackState");
-        int playbackState = PlaybackStateCompat.STATE_NONE;
-        if (state != null && state.equals("paused")) {
-            playbackState = PlaybackStateCompat.STATE_PAUSED;
-        } else if (state != null && state.equals("playing")) {
-            playbackState = PlaybackStateCompat.STATE_PLAYING;
+        final boolean playback = playbackState.equals("playing") || playbackState.equals("paused");
+        if (startServiceOnlyDuringPlayback && service == null && playback) {
+            startMediaService();
+        } else if (startServiceOnlyDuringPlayback && service != null && !playback) {
+            service.destroy();
+            service = null;
+        } else if (service != null) {
+            updateServicePlaybackState();
         }
+    }
 
-        service.setPlaybackState(playbackState);
-        service.update();
+    private void updateServicePositionState() {
+        service.setDuration(Math.round(duration * 1000));
+        service.setPosition(Math.round(position * 1000));
+        service.setPlaybackSpeed((float) playbackRate);
     }
 
     @PluginMethod
     public void setPositionState(PluginCall call) {
-        if (service == null) {
-            Log.w(TAG, "Trying to set position state but not connected to a MediaSessionService");
-            return;
-        }
+        duration = call.getDouble("duration", 0.0);
+        position = call.getDouble("position", 0.0);
+        playbackRate = call.getFloat("playbackRate", 1.0F);
 
-        Double durationSeconds = call.getDouble("duration", 0.0);
-        long duration = Math.round(durationSeconds * 1000);
-        Double positionSeconds = call.getDouble("position", 0.0);
-        long position = Math.round(positionSeconds * 1000);
-        Float playbackSpeed = call.getFloat("playbackRate", 1.0F);
-
-        service.setDuration(duration);
-        service.setPosition(position);
-        service.setPlaybackSpeed(playbackSpeed);
-        service.update();
+        if (service != null) { updateServicePositionState(); };
     }
 
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     public void setActionHandler(PluginCall call) {
-        Log.d(TAG, "setActionHandler (for action " + call.getString("action") + ")");
-
         call.setKeepAlive(true);
         actionHandlers.put(call.getString("action"), call);
-        service.updatePossibleActions();
+
+        if (service != null) { service.updatePossibleActions(); };
     }
 
     public boolean hasActionHandler(String action) {
