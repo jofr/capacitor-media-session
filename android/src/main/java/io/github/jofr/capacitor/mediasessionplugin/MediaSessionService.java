@@ -1,5 +1,6 @@
 package io.github.jofr.capacitor.mediasessionplugin;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -13,9 +14,16 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 import androidx.media.app.NotificationCompat.MediaStyle;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class MediaSessionService extends Service {
     private static final String TAG = "MediaSessionService";
@@ -28,6 +36,8 @@ public class MediaSessionService extends Service {
     private MediaMetadataCompat.Builder mediaMetadataBuilder;
     private NotificationManager notificationManager;
     private NotificationCompat.Builder notificationBuilder;
+    private MediaStyle notificationStyle;
+    private final Map<String, NotificationCompat.Action> notificationActions = new HashMap<>();
     private static final int NOTIFICATION_ID = 1;
 
     private int playbackState = PlaybackStateCompat.STATE_NONE;
@@ -38,6 +48,7 @@ public class MediaSessionService extends Service {
     private long position = 0;
     private float playbackSpeed = 0;
 
+    private boolean possibleActionsUpdate = true;
     private boolean playbackStateUpdate = false;
     private boolean mediaMetadataUpdate = false;
     private boolean notificationUpdate = false;
@@ -52,14 +63,10 @@ public class MediaSessionService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d(TAG, "binder.onBind");
-
         return binder;
     }
 
     public void connectAndInitialize(MediaSessionPlugin plugin) {
-        Log.i(TAG, "connectAndInitialize");
-
         this.plugin = plugin;
 
         mediaSession = new MediaSessionCompat(this, "WebViewMediaSession");
@@ -67,8 +74,8 @@ public class MediaSessionService extends Service {
         mediaSession.setActive(true);
 
         playbackStateBuilder = new PlaybackStateCompat.Builder()
-                .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE | PlaybackStateCompat.ACTION_REWIND | PlaybackStateCompat.ACTION_FAST_FORWARD | PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS  | PlaybackStateCompat.ACTION_SKIP_TO_NEXT | PlaybackStateCompat.ACTION_SEEK_TO)
-                .setState(PlaybackStateCompat.STATE_PAUSED, 50, 1);
+                .setActions(PlaybackStateCompat.ACTION_PLAY)
+                .setState(PlaybackStateCompat.STATE_PAUSED, position, playbackSpeed);
         mediaSession.setPlaybackState(playbackStateBuilder.build());
 
         mediaMetadataBuilder = new MediaMetadataCompat.Builder()
@@ -84,28 +91,39 @@ public class MediaSessionService extends Service {
             notificationManager.createNotificationChannel(channel);
         }
 
+        notificationStyle = new MediaStyle().setMediaSession(mediaSession.getSessionToken());
         notificationBuilder = new NotificationCompat.Builder(this, "playback")
-                .setStyle(new MediaStyle().setMediaSession(mediaSession.getSessionToken()))
+                .setStyle(notificationStyle)
                 .setSmallIcon(R.drawable.ic_transparent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(NOTIFICATION_ID, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
         }
-    }
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        Log.d(TAG, "onCreate");
+        notificationActions.put("play", new NotificationCompat.Action(
+                R.drawable.ic_baseline_play_arrow_24, "Play", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)
+        ));
+        notificationActions.put("pause", new NotificationCompat.Action(
+                R.drawable.ic_baseline_pause_24, "Pause", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)
+        ));
+        notificationActions.put("seekbackward", new NotificationCompat.Action(
+                R.drawable.ic_baseline_replay_30_24, "Previous Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_REWIND)
+        ));
+        notificationActions.put("seekforward", new NotificationCompat.Action(
+                R.drawable.ic_baseline_forward_30_24, "Next Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_FAST_FORWARD)
+        ));
+        notificationActions.put("previoustrack", new NotificationCompat.Action(
+                R.drawable.ic_baseline_skip_previous_24, "Previous Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)
+        ));
+        notificationActions.put("nexttrack", new NotificationCompat.Action(
+                R.drawable.ic_baseline_skip_next_24, "Next Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
+        ));
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand");
-
-        MediaButtonReceiver.handleIntent(mediaSession, intent); // TODO: is this necessary or was it only on older versions?
+        MediaButtonReceiver.handleIntent(mediaSession, intent);
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -113,6 +131,7 @@ public class MediaSessionService extends Service {
         if (this.playbackState != playbackState) {
             this.playbackState = playbackState;
             playbackStateUpdate = true;
+            possibleActionsUpdate = true;
         }
     }
 
@@ -162,7 +181,60 @@ public class MediaSessionService extends Service {
         }
     }
 
+    @SuppressLint("RestrictedApi")
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void update() {
+        if (possibleActionsUpdate) {
+            final String[] possibleActions =
+                    {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack"};
+            final Set<String> compactViewActions =
+                    new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack"));
+            Map<String, Long> actionToPlaybackAction = new HashMap<>();
+            actionToPlaybackAction.put("previoustrack", PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
+            actionToPlaybackAction.put("seekbackward", PlaybackStateCompat.ACTION_REWIND);
+            actionToPlaybackAction.put("play", PlaybackStateCompat.ACTION_PLAY_PAUSE);
+            actionToPlaybackAction.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
+            actionToPlaybackAction.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
+            actionToPlaybackAction.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
+
+            notificationBuilder.mActions.clear();
+            long playbackStateActions = PlaybackStateCompat.ACTION_SEEK_TO;
+            Set<Integer> compactViewActionIndices = new HashSet<>();
+            int actionIndex = 0;
+            for (String actionName : possibleActions) {
+                if (plugin.hasActionHandler(actionName)) {
+                    if (actionName.equals("play") && playbackState != PlaybackStateCompat.STATE_PAUSED) {
+                        continue;
+                    }
+                    if (actionName.equals("pause") && playbackState != PlaybackStateCompat.STATE_PLAYING) {
+                        continue;
+                    }
+
+                    playbackStateActions = playbackStateActions | actionToPlaybackAction.get(actionName);
+
+                    notificationBuilder
+                            .addAction(notificationActions.get(actionName));
+                    if (compactViewActions.contains(actionName)) {
+                        compactViewActionIndices.add(actionIndex);
+                    }
+
+                    actionIndex++;
+                }
+            }
+
+            if (!compactViewActions.isEmpty()) {
+                notificationStyle
+                        .setShowActionsInCompactView(compactViewActionIndices.stream().mapToInt(Number::intValue).toArray());
+            }
+
+            playbackStateBuilder
+                    .setActions(playbackStateActions);
+
+            possibleActionsUpdate = false;
+            playbackStateUpdate = true;
+            notificationUpdate = true;
+        }
+
         if (playbackStateUpdate) {
             playbackStateBuilder.setState(this.playbackState, this.position, this.playbackSpeed);
             mediaSession.setPlaybackState(playbackStateBuilder.build());
@@ -186,5 +258,10 @@ public class MediaSessionService extends Service {
             notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
             notificationUpdate = false;
         }
+    }
+
+    public void updatePossibleActions() {
+        this.possibleActionsUpdate = true;
+        this.update();
     }
 }

@@ -8,7 +8,6 @@ import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.getcapacitor.JSObject;
@@ -24,15 +23,14 @@ import java.util.Map;
 public class MediaSessionPlugin extends Plugin {
     private static final String TAG = "MediaSessionPlugin";
 
-    private MediaSessionService service = null;
-
-    private boolean playing = false;
     private final Map<String, PluginCall> actionHandlers = new HashMap<>();
+
+    private MediaSessionService service = null;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.i(TAG, "serviceConnection.onServiceConnected");
+            Log.d(TAG, "Connected to MediaSessionService");
 
             MediaSessionService.LocalBinder binder = (MediaSessionService.LocalBinder) iBinder;
             service = binder.getService();
@@ -41,7 +39,7 @@ public class MediaSessionPlugin extends Plugin {
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
-            Log.i(TAG, "serviceConnection.onServiceDisconnected");
+            Log.d(TAG, "Disconnected from MediaSessionService");
         }
     };
 
@@ -61,11 +59,12 @@ public class MediaSessionPlugin extends Plugin {
     @PluginMethod
     public void setMetadata(PluginCall call) {
         if (service == null) {
+            Log.w(TAG, "Trying to set metadata but not connected to a MediaSessionService");
             return;
         }
 
         service.setTitle(call.getString("title", ""));
-        service.setArtist(call.getString("album", ""));
+        service.setArtist(call.getString("artist", ""));
         service.setAlbum(call.getString("album", ""));
         service.update();
     }
@@ -73,6 +72,7 @@ public class MediaSessionPlugin extends Plugin {
     @PluginMethod
     public void setPlaybackState(PluginCall call) {
         if (service == null) {
+            Log.w(TAG, "Trying to set playback state but not connected to a MediaSessionService");
             return;
         }
 
@@ -91,6 +91,7 @@ public class MediaSessionPlugin extends Plugin {
     @PluginMethod
     public void setPositionState(PluginCall call) {
         if (service == null) {
+            Log.w(TAG, "Trying to set position state but not connected to a MediaSessionService");
             return;
         }
 
@@ -106,36 +107,30 @@ public class MediaSessionPlugin extends Plugin {
         service.update();
     }
 
-    public void actionCallback(String action) {
-        Log.d(TAG, "actionCallback (for action " + action + ")");
-
-        PluginCall call = actionHandlers.get(action);
-        if (call != null) {
-            JSObject data = new JSObject();
-            data.put("action", action);
-            call.resolve(data);
-        } else {
-            Log.i(TAG, "No callback for action " + action);
-        }
-    }
-
-    public void actionCallback(String action, JSObject data) {
-        Log.d(TAG, "actionCallback (for action " + action + ")");
-
-        PluginCall call = actionHandlers.get(action);
-        if (call != null) {
-            data.put("action", action);
-            call.resolve(data);
-        } else {
-            Log.i(TAG, "No callback for action " + action);
-        }
-    }
-
     @PluginMethod(returnType = PluginMethod.RETURN_CALLBACK)
     public void setActionHandler(PluginCall call) {
         Log.d(TAG, "setActionHandler (for action " + call.getString("action") + ")");
 
         call.setKeepAlive(true);
         actionHandlers.put(call.getString("action"), call);
+        service.updatePossibleActions();
+    }
+
+    public boolean hasActionHandler(String action) {
+        return actionHandlers.containsKey(action) && !actionHandlers.get(action).getCallbackId().equals(PluginCall.CALLBACK_ID_DANGLING);
+    }
+
+    public void actionCallback(String action) {
+        actionCallback(action, new JSObject());
+    }
+
+    public void actionCallback(String action, JSObject data) {
+        PluginCall call = actionHandlers.get(action);
+        if (call != null && !call.getCallbackId().equals(PluginCall.CALLBACK_ID_DANGLING)) {
+            data.put("action", action);
+            call.resolve(data);
+        } else {
+            Log.i(TAG, "No handler for action " + action);
+        }
     }
 }

@@ -2,11 +2,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.github.jofr.capacitor.mediasessionplugin">
 
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application>
         <service
             android:name=".MediaSessionService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name="androidx.media.session.MediaButtonReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
