@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Binder;
@@ -41,6 +42,7 @@ public class MediaSessionService extends Service {
     private String title = "";
     private String artist = "";
     private String album = "";
+    private Bitmap artwork = null;
     private long duration = 0;
     private long position = 0;
     private float playbackSpeed = 0;
@@ -94,7 +96,7 @@ public class MediaSessionService extends Service {
         notificationStyle = new MediaStyle().setMediaSession(mediaSession.getSessionToken());
         notificationBuilder = new NotificationCompat.Builder(this, "playback")
                 .setStyle(notificationStyle)
-                .setSmallIcon(R.drawable.ic_transparent)
+                .setSmallIcon(R.drawable.ic_baseline_volume_up_24)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -163,6 +165,12 @@ public class MediaSessionService extends Service {
             mediaMetadataUpdate = true;
             notificationUpdate = true;
         }
+    }
+
+    public void setArtwork(Bitmap artwork) {
+        this.artwork = artwork;
+        mediaMetadataUpdate = true;
+        notificationUpdate = true;
     }
 
     public void setDuration(long duration) {
@@ -261,7 +269,8 @@ public class MediaSessionService extends Service {
         if (notificationUpdate) {
             notificationBuilder
                     .setContentTitle(title)
-                    .setContentText(artist + " - " + album);
+                    .setContentText(artist + " - " + album)
+                    .setLargeIcon(artwork);
             notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
             notificationUpdate = false;
         }
