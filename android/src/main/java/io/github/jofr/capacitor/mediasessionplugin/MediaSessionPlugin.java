@@ -6,15 +6,11 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Base64;
 import android.util.Log;
-import android.webkit.ValueCallback;
-import android.webkit.WebView;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 
 import com.getcapacitor.JSArray;
@@ -30,9 +26,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +35,7 @@ import java.util.Map;
 public class MediaSessionPlugin extends Plugin {
     private static final String TAG = "MediaSessionPlugin";
 
-    private boolean startServiceOnlyDuringPlayback = false;
+    private boolean startServiceOnlyDuringPlayback = true;
 
     private String title = "";
     private String artist = "";
@@ -58,8 +52,6 @@ public class MediaSessionPlugin extends Plugin {
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            Log.d(TAG, "Connected to MediaSessionService");
-
             MediaSessionService.LocalBinder binder = (MediaSessionService.LocalBinder) iBinder;
             service = binder.getService();
             service.connectAndInitialize(MediaSessionPlugin.this);
@@ -79,8 +71,8 @@ public class MediaSessionPlugin extends Plugin {
         super.load();
 
         final String foregroundServiceConfig = getConfig().getString("foregroundService", "");
-        if (foregroundServiceConfig.equals("duringPlayback")) {
-            startServiceOnlyDuringPlayback = true;
+        if (foregroundServiceConfig.equals("always")) {
+            startServiceOnlyDuringPlayback = false;
         }
 
         if (!startServiceOnlyDuringPlayback) {
@@ -177,7 +169,8 @@ public class MediaSessionPlugin extends Plugin {
     private void updateServicePositionState() {
         service.setDuration(Math.round(duration * 1000));
         service.setPosition(Math.round(position * 1000));
-        service.setPlaybackSpeed((float) playbackRate);
+        float playbackSpeed = playbackRate == 0.0 ? (float) 1.0 : (float) playbackRate;
+        service.setPlaybackSpeed(playbackSpeed);
     }
 
     @PluginMethod
@@ -211,7 +204,7 @@ public class MediaSessionPlugin extends Plugin {
             data.put("action", action);
             call.resolve(data);
         } else {
-            Log.i(TAG, "No handler for action " + action);
+            Log.d(TAG, "No handler for action " + action);
         }
     }
 }
