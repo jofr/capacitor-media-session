@@ -45,7 +45,7 @@ public class MediaSessionService extends Service {
     private Bitmap artwork = null;
     private long duration = 0;
     private long position = 0;
-    private float playbackSpeed = 0;
+    private float playbackSpeed = 1.0F;
 
     private boolean possibleActionsUpdate = true;
     private boolean playbackStateUpdate = false;
@@ -81,9 +81,6 @@ public class MediaSessionService extends Service {
         mediaSession.setPlaybackState(playbackStateBuilder.build());
 
         mediaMetadataBuilder = new MediaMetadataCompat.Builder()
-                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
-                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
-                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
                 .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration);
         mediaSession.setMetadata(mediaMetadataBuilder.build());
 
@@ -135,7 +132,6 @@ public class MediaSessionService extends Service {
     }
 
     public void setPlaybackState(int playbackState) {
-        Log.d(TAG, "setPlaybackState " + playbackState);
         if (this.playbackState != playbackState) {
             this.playbackState = playbackState;
             playbackStateUpdate = true;
@@ -261,6 +257,7 @@ public class MediaSessionService extends Service {
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
                     .putString(MediaMetadataCompat.METADATA_KEY_ALBUM, album)
+                    .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, artwork)
                     .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, duration);
             mediaSession.setMetadata(mediaMetadataBuilder.build());
             mediaMetadataUpdate = false;
