@@ -1,5 +1,6 @@
 package io.github.jofr.capacitor.mediasessionplugin;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -12,6 +13,7 @@ import android.os.Binder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
@@ -198,8 +200,11 @@ public class MediaSessionService extends Service {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     public void update() {
         if (possibleActionsUpdate) {
+            notificationBuilder.mActions.clear();
+
             long activePlaybackStateActions = 0;
             int[] activeCompactViewActionIndices = new int[3];
 
@@ -230,7 +235,11 @@ public class MediaSessionService extends Service {
             }
 
             playbackStateBuilder.setActions(activePlaybackStateActions);
-            notificationStyle.setShowActionsInCompactView(activeCompactViewActionIndices);
+            if (compactNotificationActionIndicesIndex > 0) {
+                notificationStyle.setShowActionsInCompactView(Arrays.copyOfRange(activeCompactViewActionIndices, 0, compactNotificationActionIndicesIndex));
+            } else {
+                notificationStyle.setShowActionsInCompactView();
+            }
 
             possibleActionsUpdate = false;
             playbackStateUpdate = true;
