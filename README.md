@@ -17,7 +17,7 @@ So most available documentation for this web standard should be easily adaptable
 ## Install
 
 ```bash
-npm install capacitor-media-session
+npm install @jofr/capacitor-media-session
 npx cap sync
 ```
 
