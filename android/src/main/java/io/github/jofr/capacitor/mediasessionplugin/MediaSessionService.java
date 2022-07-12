@@ -1,6 +1,5 @@
 package io.github.jofr.capacitor.mediasessionplugin;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
@@ -13,9 +12,7 @@ import android.os.Binder;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 import androidx.media.app.NotificationCompat.MediaStyle;
@@ -36,6 +33,9 @@ public class MediaSessionService extends Service {
     private NotificationCompat.Builder notificationBuilder;
     private MediaStyle notificationStyle;
     private final Map<String, NotificationCompat.Action> notificationActions = new HashMap<>();
+    private final Map<String, Long> playbackStateActions = new HashMap<>();
+    private final String[] possibleActions = {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack", "seekto"};
+    final Set<String> possibleCompactViewActions = new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack"));
     private static final int NOTIFICATION_ID = 1;
 
     private int playbackState = PlaybackStateCompat.STATE_NONE;
@@ -118,6 +118,13 @@ public class MediaSessionService extends Service {
         notificationActions.put("nexttrack", new NotificationCompat.Action(
                 R.drawable.ic_baseline_skip_next_24, "Next Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
         ));
+
+        playbackStateActions.put("previoustrack", PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
+        playbackStateActions.put("seekbackward", PlaybackStateCompat.ACTION_REWIND);
+        playbackStateActions.put("play", PlaybackStateCompat.ACTION_PLAY_PAUSE);
+        playbackStateActions.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
+        playbackStateActions.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
+        playbackStateActions.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
     }
 
     public void destroy() {
@@ -191,29 +198,15 @@ public class MediaSessionService extends Service {
         }
     }
 
-    @SuppressLint("RestrictedApi")
-    @RequiresApi(api = Build.VERSION_CODES.N)
     public void update() {
         if (possibleActionsUpdate) {
-            final String[] possibleActions =
-                    {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack"};
-            final Set<String> compactViewActions =
-                    new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack"));
-            Map<String, Long> actionToPlaybackAction = new HashMap<>();
-            actionToPlaybackAction.put("previoustrack", PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
-            actionToPlaybackAction.put("seekbackward", PlaybackStateCompat.ACTION_REWIND);
-            actionToPlaybackAction.put("play", PlaybackStateCompat.ACTION_PLAY_PAUSE);
-            actionToPlaybackAction.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
-            actionToPlaybackAction.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
-            actionToPlaybackAction.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
+            long activePlaybackStateActions = 0;
+            int[] activeCompactViewActionIndices = new int[3];
 
-            notificationBuilder.mActions.clear();
-            long playbackStateActions = PlaybackStateCompat.ACTION_SEEK_TO;
-            Set<Integer> compactViewActionIndices = new HashSet<>();
-            int actionIndex = 0;
+            int notificationActionIndex = 0;
+            int compactNotificationActionIndicesIndex = 0;
             for (String actionName : possibleActions) {
                 if (plugin.hasActionHandler(actionName)) {
-                    Log.d(TAG, "hasActionHandler " + actionName);
                     if (actionName.equals("play") && playbackState != PlaybackStateCompat.STATE_PAUSED) {
                         continue;
                     }
@@ -221,25 +214,23 @@ public class MediaSessionService extends Service {
                         continue;
                     }
 
-                    playbackStateActions = playbackStateActions | actionToPlaybackAction.get(actionName);
-
-                    notificationBuilder
-                            .addAction(notificationActions.get(actionName));
-                    if (compactViewActions.contains(actionName)) {
-                        compactViewActionIndices.add(actionIndex);
+                    if (playbackStateActions.containsKey(actionName)) {
+                        activePlaybackStateActions = activePlaybackStateActions | playbackStateActions.get(actionName);
                     }
 
-                    actionIndex++;
+                    if (notificationActions.containsKey(actionName)) {
+                        notificationBuilder.addAction(notificationActions.get(actionName));
+                        if (possibleCompactViewActions.contains(actionName) && compactNotificationActionIndicesIndex < 3) {
+                            activeCompactViewActionIndices[compactNotificationActionIndicesIndex] = notificationActionIndex;
+                            compactNotificationActionIndicesIndex++;
+                        }
+                        notificationActionIndex++;
+                    }
                 }
             }
 
-            if (!compactViewActions.isEmpty()) {
-                notificationStyle
-                        .setShowActionsInCompactView(compactViewActionIndices.stream().mapToInt(Number::intValue).toArray());
-            }
-
-            playbackStateBuilder
-                    .setActions(playbackStateActions);
+            playbackStateBuilder.setActions(activePlaybackStateActions);
+            notificationStyle.setShowActionsInCompactView(activeCompactViewActionIndices);
 
             possibleActionsUpdate = false;
             playbackStateUpdate = true;

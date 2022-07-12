@@ -7,7 +7,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata(options);
         } else {
-            throw this.unimplemented('Media Session API not available in this browser.');
+            throw this.unavailable('Media Session API not available in this browser.');
         }
     }
 
@@ -15,7 +15,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = options.playbackState;
         } else {
-            throw this.unimplemented('Media Session API not available in this browser.');
+            throw this.unavailable('Media Session API not available in this browser.');
         }
     };
 
@@ -23,7 +23,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler(options.action, handler);
         } else {
-            throw this.unimplemented('Media Session API not available in this browser.');
+            throw this.unavailable('Media Session API not available in this browser.');
         }
     };
 
@@ -31,7 +31,7 @@ export class MediaSessionWeb extends WebPlugin implements MediaSessionPlugin {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setPositionState(options);
         } else {
-            throw this.unimplemented('Media Session API not available in this browser.');
+            throw this.unavailable('Media Session API not available in this browser.');
         }
     };
 }
