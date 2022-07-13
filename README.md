@@ -1,18 +1,13 @@
 # capacitor-media-session
 
-Capacitor plugin to provide Media Sessions for Web and Android (iOS should work using the web implementation) as well as background audio playback using web standards (meaning e.g. an `<audio>` element) on Android.
-Just like the [Media Session Web API](https://w3c.github.io/mediasession/) this enables customized media notifications and media control using platform media keys (e.g. hardware keys on headsets or software keys in the notification area).
+Capacitor plugin for Media Sessions on Web, Android and iOS. Just like the [Media Session Web API](https://w3c.github.io/mediasession/) this enables
+- customizable media playback notifications (including controls) on iOS and Android (and some browsers)
+- media control using hardware media keys (e.g. on headsets, remote controls, etc.)
+- setting media metadata that can be used by the platform UI
 
-This plugin does not handle audio or media playback in any way, you can do this using a plain `<audio>` element or the Web Audio API.
-Just like the Media Session Web API this plugin only handles the display of media notifications, providing media metadata to the system and the ability to react to platform media controls through action handlers ([you can read more about the general concept of the Media Session API on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API)).
+This plugin is necessary for Capacitor apps because the Android WebView does not support the Media Session Web API (if you don't need Android support you could just use the Web API directly on Web and iOS). On Web and iOS this plugin is actually just a very thin wrapper around the Web API and uses it directly, only Android needs a native implementation.
 
-This plugin is necessary for Capacitor apps because the Android WebView does not support the Media Session Web API.
-An additional disadvantage of this behaviour an Android is that audio playback in the background is not (reliably) possible in a Capacitor app.
-Android might and will force your app to go to sleep even if audio is currently playing in your WebView.
-This plugin also tries to solve this problem by starting a [foreground service](https://developer.android.com/guide/components/foreground-services) for active Media Sessions enabling background playback.
-
-The API of this plugin tries to stay as close as possible to the [already widely supported](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility) Media Session Web API.
-So most available documentation for this web standard should be easily adaptable to this Capacitor plugin.
+Another problem with audio playback (using web standards, e.g. an `<audio>` element) in Capacitor apps on Android is that it does not work reliably in the background. If your app is in the background Android will force your app to go to sleep even if audio is currently playing in the WebView. This plugin also tries to solve this problem by starting a [foreground service](https://developer.android.com/guide/components/foreground-services) for active Media Sessions enabling background playback.
 
 ## Install
 
@@ -22,6 +17,8 @@ npx cap sync
 ```
 
 ## API
+
+The API of this plugin is modeled after the [already widely supported](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility) Media Session Web API. That way most available documentation for this web standard should be easily adaptable to this Capacitor plugin and it should be easy to use if you are already familiar with it. If your are not yet familiar with the concepts you can (read more about that on MDN)[https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API] or on (the Chrome Developers Blog)[https://developer.chrome.com/blog/media-session/].
 
 <docgen-index>
 
