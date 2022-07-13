@@ -49,4 +49,9 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
     public void onSkipToNext() {
         plugin.actionCallback("nexttrack");
     }
+
+    @Override
+    public void onStop() {
+        plugin.actionCallback("stop");
+    }
 }

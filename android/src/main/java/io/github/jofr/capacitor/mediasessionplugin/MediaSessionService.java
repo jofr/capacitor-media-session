@@ -36,7 +36,7 @@ public class MediaSessionService extends Service {
     private MediaStyle notificationStyle;
     private final Map<String, NotificationCompat.Action> notificationActions = new HashMap<>();
     private final Map<String, Long> playbackStateActions = new HashMap<>();
-    private final String[] possibleActions = {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack", "seekto"};
+    private final String[] possibleActions = {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack", "seekto", "stop"};
     final Set<String> possibleCompactViewActions = new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack"));
     private static final int NOTIFICATION_ID = 1;
 
@@ -120,6 +120,9 @@ public class MediaSessionService extends Service {
         notificationActions.put("nexttrack", new NotificationCompat.Action(
                 R.drawable.ic_baseline_skip_next_24, "Next Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)
         ));
+        notificationActions.put("stop", new NotificationCompat.Action(
+                R.drawable.ic_baseline_stop_24, "Stop", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP)
+        ));
 
         playbackStateActions.put("previoustrack", PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
         playbackStateActions.put("seekbackward", PlaybackStateCompat.ACTION_REWIND);
@@ -127,6 +130,7 @@ public class MediaSessionService extends Service {
         playbackStateActions.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
         playbackStateActions.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
         playbackStateActions.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
+        playbackStateActions.put("stop", PlaybackStateCompat.ACTION_STOP);
     }
 
     public void destroy() {
