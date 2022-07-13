@@ -1,6 +1,6 @@
 {
-  "name": "App",
-  "short_name": "App",
+  "name": "Media Session Example App",
+  "short_name": "Media Session Example",
   "start_url": "index.html",
   "display": "standalone",
   "icons": [{

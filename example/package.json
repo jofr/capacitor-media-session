@@ -1,7 +1,7 @@
 {
-  "name": "capacitor-app",
+  "name": "@jofr/capacitor-media-session-example-app",
   "version": "1.0.0",
-  "description": "An Amazing Capacitor App",
+  "description": "Media Session Example App",
   "main": "index.js",
   "keywords": [
     "capacitor",
@@ -13,10 +13,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@capacitor/camera": "latest",
     "@capacitor/core": "latest",
-    "@capacitor/splash-screen": "latest",
-    "capacitor-media-session": "file:.."
+    "@jofr/capacitor-media-session": "file:.."
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
