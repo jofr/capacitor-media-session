@@ -130,6 +130,7 @@ public class MediaSessionService extends Service {
         playbackStateActions.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
         playbackStateActions.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
         playbackStateActions.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
+        playbackStateActions.put("seekto", PlaybackStateCompat.ACTION_SEEK_TO);
         playbackStateActions.put("stop", PlaybackStateCompat.ACTION_STOP);
     }
 
