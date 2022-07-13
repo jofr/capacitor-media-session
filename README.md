@@ -18,7 +18,7 @@ npx cap sync
 
 ## API
 
-The API of this plugin is modeled after the [already widely supported](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility) Media Session Web API. That way most available documentation for this web standard should be easily adaptable to this Capacitor plugin and it should be easy to use if you are already familiar with it. If your are not yet familiar with the concepts you can (read more about that on MDN)[https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API] or on (the Chrome Developers Blog)[https://developer.chrome.com/blog/media-session/].
+The API of this plugin is modeled after the [already widely supported](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API#browser_compatibility) Media Session Web API. That way most available documentation for this web standard should be easily adaptable to this Capacitor plugin and it should be easy to use if you are already familiar with it. If your are not yet familiar with the concepts you can [read more about that on MDN](https://developer.mozilla.org/en-US/docs/Web/API/Media_Session_API) or on [the Chrome Developers Blog](https://developer.chrome.com/blog/media-session/).
 
 <docgen-index>
 
