@@ -14,6 +14,8 @@ const updatePositionState = () => {
 audioElement.addEventListener('durationchange', updatePositionState);
 audioElement.addEventListener('seeked', updatePositionState);
 audioElement.addEventListener('ratechange', updatePositionState);
+audioElement.addEventListener('play', updatePositionState);
+audioElement.addEventListener('pause', updatePositionState);
 
 const updatePlaybackState = () => {
     const playbackState = playbackStopped ? 'none' : (audioElement.paused ? 'paused' : 'playing');
