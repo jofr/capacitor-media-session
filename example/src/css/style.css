@@ -1,5 +1,7 @@
 html,
 body {
-  padding: 0;
+  padding: 0.5rem;
   margin: 0;
+  font-family: sans-serif;
+  text-align: center;
 }

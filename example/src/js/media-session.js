@@ -1,7 +1,7 @@
 import { MediaSession } from '@jofr/capacitor-media-session';
 
 const audioElement = document.querySelector('audio');
-const playbackStopped = true;
+let playbackStopped = true;
 
 const updatePositionState = () => {
     MediaSession.setPositionState({
@@ -11,22 +11,31 @@ const updatePositionState = () => {
     });
 }
 
-audioElement.addEventListener("durationchange", updatePositionState);
-audioElement.addEventListener("seeked", updatePositionState);
-audioElement.addEventListener("ratechange", updatePositionState);
+audioElement.addEventListener('durationchange', updatePositionState);
+audioElement.addEventListener('seeked', updatePositionState);
+audioElement.addEventListener('ratechange', updatePositionState);
 
 const updatePlaybackState = () => {
-    const playbackState = playbackStopped ? "none" : (audioElement.paused ? "paused" : "playing");
+    const playbackState = playbackStopped ? 'none' : (audioElement.paused ? 'paused' : 'playing');
     MediaSession.setPlaybackState({
         playbackState: playbackState
     });
 }
 
-audioElement.addEventListener("play", () => {
+audioElement.addEventListener('play', () => {
     playbackStopped = false;
     updatePlaybackState();
+
+    MediaSession.setMetadata({
+        title: 'Prelude',
+        artist: 'Jan Morgenstern',
+        album: 'Big Buck Bunny',
+        artwork: [
+            { src: './assets/imgs/logo.png', type: 'image/png', sizes: '512x512' }
+        ]
+    });
 });
-audioElement.addEventListener("pause", updatePlaybackState);
+audioElement.addEventListener('pause', updatePlaybackState);
 
 
 MediaSession.setActionHandler({ action: 'play' }, () => {
@@ -48,11 +57,10 @@ MediaSession.setActionHandler({ action: 'seekforward' }, (details) => {
 
 MediaSession.setActionHandler({ action: 'seekbackward' }, (details) => {
     const seekOffset = details.seekOffset ?? 30;
-    audioElement.currentTime = audioElement.currentTime + 30;
+    audioElement.currentTime = audioElement.currentTime - 30;
 });
 
 MediaSession.setActionHandler({ action: 'stop' }, () => {
-    audioElement.pause();
     playbackStopped = true;
-    updatePlaybackState();
+    audioElement.pause();
 });
