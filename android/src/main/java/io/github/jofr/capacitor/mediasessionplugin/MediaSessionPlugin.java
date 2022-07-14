@@ -171,6 +171,7 @@ public class MediaSessionPlugin extends Plugin {
         service.setPosition(Math.round(position * 1000));
         float playbackSpeed = playbackRate == 0.0 ? (float) 1.0 : (float) playbackRate;
         service.setPlaybackSpeed(playbackSpeed);
+        service.update();
     }
 
     @PluginMethod
