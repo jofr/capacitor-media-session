@@ -37,7 +37,7 @@ public class MediaSessionService extends Service {
     private final Map<String, NotificationCompat.Action> notificationActions = new HashMap<>();
     private final Map<String, Long> playbackStateActions = new HashMap<>();
     private final String[] possibleActions = {"previoustrack", "seekbackward", "play", "pause", "seekforward", "nexttrack", "seekto", "stop"};
-    final Set<String> possibleCompactViewActions = new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack"));
+    final Set<String> possibleCompactViewActions = new HashSet<>(Arrays.asList("previoustrack", "play", "pause", "nexttrack", "stop"));
     private static final int NOTIFICATION_ID = 1;
 
     private int playbackState = PlaybackStateCompat.STATE_NONE;
