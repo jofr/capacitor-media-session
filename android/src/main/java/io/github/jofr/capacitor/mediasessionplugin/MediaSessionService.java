@@ -3,6 +3,7 @@ package io.github.jofr.capacitor.mediasessionplugin;
 import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
@@ -15,6 +16,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.media.session.MediaButtonReceiver;
 import androidx.media.app.NotificationCompat.MediaStyle;
@@ -70,7 +72,7 @@ public class MediaSessionService extends Service {
         return binder;
     }
 
-    public void connectAndInitialize(MediaSessionPlugin plugin) {
+    public void connectAndInitialize(MediaSessionPlugin plugin, Intent intent) {
         this.plugin = plugin;
 
         mediaSession = new MediaSessionCompat(this, "WebViewMediaSession");
@@ -96,6 +98,7 @@ public class MediaSessionService extends Service {
         notificationBuilder = new NotificationCompat.Builder(this, "playback")
                 .setStyle(notificationStyle)
                 .setSmallIcon(R.drawable.ic_baseline_volume_up_24)
+                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

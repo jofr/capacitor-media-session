@@ -54,7 +54,8 @@ public class MediaSessionPlugin extends Plugin {
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             MediaSessionService.LocalBinder binder = (MediaSessionService.LocalBinder) iBinder;
             service = binder.getService();
-            service.connectAndInitialize(MediaSessionPlugin.this);
+            Intent intent = new Intent(getActivity(), getActivity().getClass());
+            service.connectAndInitialize(MediaSessionPlugin.this, intent);
             updateServiceMetadata();
             updateServicePlaybackState();
             updateServicePositionState();
