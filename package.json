@@ -1,6 +1,6 @@
 {
   "name": "@jofr/capacitor-media-session",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Capacitor plugin for media notifications and platform media keys as well as background audio playback",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
