@@ -11,10 +11,14 @@ Another problem with audio playback (using web standards, e.g. an `<audio>` elem
 
 ## Install
 
+If you are using Capacitor 4 just install the latest 2.x version of this plugin using
+
 ```bash
 npm install @jofr/capacitor-media-session
 npx cap sync
 ```
+
+For Capacitor 3 you can install the 1.x version of this plugin instead (`npm install @jofr/capacitor-media-session@1`).
 
 ## Usage
 
