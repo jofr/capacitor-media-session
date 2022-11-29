@@ -160,7 +160,7 @@ public class MediaSessionPlugin extends Plugin {
         if (startServiceOnlyDuringPlayback && service == null && playback) {
             startMediaService();
         } else if (startServiceOnlyDuringPlayback && service != null && !playback) {
-            service.destroy();
+            getContext().unbindService(serviceConnection);
             service = null;
         } else if (service != null) {
             updateServicePlaybackState();

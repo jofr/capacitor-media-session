@@ -72,6 +72,13 @@ public class MediaSessionService extends Service {
         return binder;
     }
 
+    @Override
+    public boolean onUnbind(Intent intent) {
+        this.destroy();
+
+        return super.onUnbind(intent);
+    }
+
     public void connectAndInitialize(MediaSessionPlugin plugin, Intent intent) {
         this.plugin = plugin;
 
