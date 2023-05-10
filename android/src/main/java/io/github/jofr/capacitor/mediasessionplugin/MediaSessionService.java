@@ -109,7 +109,9 @@ public class MediaSessionService extends Service {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+          startForeground(NOTIFICATION_ID, notificationBuilder.build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK);
+        } else {
+          startForeground(NOTIFICATION_ID, notificationBuilder.build());
         }
 
         notificationActions.put("play", new NotificationCompat.Action(
