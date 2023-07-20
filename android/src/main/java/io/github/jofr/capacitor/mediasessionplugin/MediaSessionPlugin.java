@@ -179,7 +179,7 @@ public class MediaSessionPlugin extends Plugin {
 
     @PluginMethod
     public void setPositionState(PluginCall call) {
-        duration = call.getDouble("duration", -10.0);
+        duration = call.getDouble("duration", 0.0);
         position = call.getDouble("position", 0.0);
         playbackRate = call.getFloat("playbackRate", 1.0F);
 
