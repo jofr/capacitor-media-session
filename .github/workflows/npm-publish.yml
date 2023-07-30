@@ -2,8 +2,6 @@ name: Publish package on npm
 
 on:
   push:
-    branches:
-      - 'main'
     tags:
       - 'v**'
 
