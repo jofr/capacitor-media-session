@@ -220,7 +220,9 @@ public class MediaSessionService extends Service {
     @SuppressLint("RestrictedApi")
     public void update() {
         if (possibleActionsUpdate) {
+          if (notificationBuilder != null) {
             notificationBuilder.mActions.clear();
+          }
 
             long activePlaybackStateActions = 0;
             int[] activeCompactViewActionIndices = new int[3];
@@ -251,11 +253,15 @@ public class MediaSessionService extends Service {
                 }
             }
 
-            playbackStateBuilder.setActions(activePlaybackStateActions);
-            if (compactNotificationActionIndicesIndex > 0) {
+            if (playbackStateBuilder != null) {
+              playbackStateBuilder.setActions(activePlaybackStateActions);
+            }
+            if (notificationStyle != null) {
+              if (compactNotificationActionIndicesIndex > 0) {
                 notificationStyle.setShowActionsInCompactView(Arrays.copyOfRange(activeCompactViewActionIndices, 0, compactNotificationActionIndicesIndex));
             } else {
                 notificationStyle.setShowActionsInCompactView();
+              }
             }
 
             possibleActionsUpdate = false;
@@ -263,13 +269,13 @@ public class MediaSessionService extends Service {
             notificationUpdate = true;
         }
 
-        if (playbackStateUpdate) {
+        if (playbackStateUpdate && playbackStateBuilder != null) {
             playbackStateBuilder.setState(this.playbackState, this.position, this.playbackSpeed);
             mediaSession.setPlaybackState(playbackStateBuilder.build());
             playbackStateUpdate = false;
         }
 
-        if (mediaMetadataUpdate) {
+        if (mediaMetadataUpdate && mediaMetadataBuilder != null) {
             mediaMetadataBuilder
                     .putString(MediaMetadataCompat.METADATA_KEY_TITLE, title)
                     .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, artist)
@@ -280,7 +286,7 @@ public class MediaSessionService extends Service {
             mediaMetadataUpdate = false;
         }
 
-        if (notificationUpdate) {
+        if (notificationUpdate && notificationBuilder != null) {
             notificationBuilder
                     .setContentTitle(title)
                     .setContentText(artist + " - " + album)
