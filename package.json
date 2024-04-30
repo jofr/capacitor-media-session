@@ -1,6 +1,6 @@
 {
-  "name": "@jofr/capacitor-media-session",
-  "version": "3.0.3",
+  "name": "@christoffyw/capacitor-media-session",
+  "version": "3.0.4",
   "description": "Capacitor plugin for media notifications and platform media keys as well as background audio playback",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -15,10 +15,10 @@
   "license": "GPL-3.0-or-later",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jofr/capacitor-media-session.git"
+    "url": "git+https://github.com/Christoffyw/capacitor-media-session.git"
   },
   "bugs": {
-    "url": "https://github.com/jofr/capacitor-media-session/issues"
+    "url": "https://github.com/Christoffyw/capacitor-media-session/issues"
   },
   "keywords": [
     "capacitor",
