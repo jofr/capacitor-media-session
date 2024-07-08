@@ -104,11 +104,16 @@ public class MediaSessionPlugin extends Plugin {
 
         final boolean httpUrl = url.startsWith("http");
         if (httpUrl) {
-            HttpURLConnection connection = (HttpURLConnection) (new URL(url)).openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream inputStream = connection.getInputStream();
-            return BitmapFactory.decodeStream(inputStream);
+            try {
+                HttpURLConnection connection = (HttpURLConnection) (new URL(url)).openConnection();
+                connection.setDoInput(true);
+                connection.connect();
+                InputStream inputStream = connection.getInputStream();
+                return BitmapFactory.decodeStream(inputStream);
+            } catch (Exception e) {
+                 Log.e(TAG, "Error fetching artwork", e);
+                return null;
+            }
         }
 
         int base64Index = url.indexOf(";base64,");
