@@ -115,10 +115,10 @@ public class MediaSessionService extends Service {
         }
 
         notificationActions.put("play", new NotificationCompat.Action(
-                R.drawable.ic_baseline_play_arrow_24, "Play", MediaButtonReceiver.buildMediaButtonPendingIntent(this, (PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY))
+                R.drawable.ic_baseline_play_arrow_24, "Play", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY)
         ));
         notificationActions.put("pause", new NotificationCompat.Action(
-                R.drawable.ic_baseline_pause_24, "Pause", MediaButtonReceiver.buildMediaButtonPendingIntent(this, (PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE))
+                R.drawable.ic_baseline_pause_24, "Pause", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)
         ));
         notificationActions.put("seekbackward", new NotificationCompat.Action(
                 R.drawable.ic_baseline_replay_30_24, "Previous Track", MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_REWIND)
@@ -138,8 +138,8 @@ public class MediaSessionService extends Service {
 
         playbackStateActions.put("previoustrack", PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS);
         playbackStateActions.put("seekbackward", PlaybackStateCompat.ACTION_REWIND);
-        playbackStateActions.put("play", (PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PLAY));
-        playbackStateActions.put("pause", (PlaybackStateCompat.ACTION_PLAY_PAUSE | PlaybackStateCompat.ACTION_PAUSE));
+        playbackStateActions.put("play", PlaybackStateCompat.ACTION_PLAY);
+        playbackStateActions.put("pause", PlaybackStateCompat.ACTION_PLAY_PAUSE);
         playbackStateActions.put("seekforward", PlaybackStateCompat.ACTION_FAST_FORWARD);
         playbackStateActions.put("nexttrack", PlaybackStateCompat.ACTION_SKIP_TO_NEXT);
         playbackStateActions.put("seekto", PlaybackStateCompat.ACTION_SEEK_TO);
