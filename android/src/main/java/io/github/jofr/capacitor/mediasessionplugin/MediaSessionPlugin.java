@@ -10,19 +10,13 @@ import android.os.IBinder;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Base64;
 import android.util.Log;
-
 import androidx.core.content.ContextCompat;
-
 import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -30,9 +24,12 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 @CapacitorPlugin(name = "MediaSession")
 public class MediaSessionPlugin extends Plugin {
+
     private static final String TAG = "MediaSessionPlugin";
 
     private boolean startServiceOnlyDuringPlayback = true;
@@ -95,7 +92,6 @@ public class MediaSessionPlugin extends Plugin {
         service.update();
     }
 
-
     private Bitmap urlToBitmap(String url) throws IOException {
         final boolean blobUrl = url.startsWith("blob:");
         if (blobUrl) {
@@ -136,7 +132,9 @@ public class MediaSessionPlugin extends Plugin {
             }
         }
 
-        if (service != null) { updateServiceMetadata(); };
+        if (service != null) {
+            updateServiceMetadata();
+        }
         call.resolve();
     }
 
@@ -183,7 +181,9 @@ public class MediaSessionPlugin extends Plugin {
         position = call.getDouble("position", 0.0);
         playbackRate = call.getFloat("playbackRate", 1.0F);
 
-        if (service != null) { updateServicePositionState(); };
+        if (service != null) {
+            updateServicePositionState();
+        }
         call.resolve();
     }
 
@@ -192,7 +192,9 @@ public class MediaSessionPlugin extends Plugin {
         call.setKeepAlive(true);
         actionHandlers.put(call.getString("action"), call);
 
-        if (service != null) { service.updatePossibleActions(); };
+        if (service != null) {
+            service.updatePossibleActions();
+        }
     }
 
     public boolean hasActionHandler(String action) {

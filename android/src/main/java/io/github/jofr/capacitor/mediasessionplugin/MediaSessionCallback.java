@@ -1,10 +1,10 @@
 package io.github.jofr.capacitor.mediasessionplugin;
 
 import android.support.v4.media.session.MediaSessionCompat;
-
 import com.getcapacitor.JSObject;
 
 public class MediaSessionCallback extends MediaSessionCompat.Callback {
+
     private static final String TAG = "MediaSessionCallback";
 
     private final MediaSessionPlugin plugin;
@@ -26,7 +26,7 @@ public class MediaSessionCallback extends MediaSessionCompat.Callback {
     @Override
     public void onSeekTo(long pos) {
         JSObject data = new JSObject();
-        data.put("seekTime", (double) pos/1000.0);
+        data.put("seekTime", (double) pos / 1000.0);
         plugin.actionCallback("seekto", data);
     }
 
